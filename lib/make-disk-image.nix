@@ -40,6 +40,9 @@ let
     ${extraPostVM}
   '';
   partitioner = ''
+    echo "setting NIX_STORE to bogus"
+    export NIX_STORE=/nonexistent-store
+
     echo "executing partitioner"
     # running udev, stolen from stage-1.sh
     echo "running udev..."
