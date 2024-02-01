@@ -66,7 +66,7 @@ let
   '';
   installer = ''
     echo "executing installer"
-    ${systemToInstall.config.system.build.nixos-install}/bin/nixos-install --system ${systemToInstall.config.system.build.toplevel} --keep-going --no-channel-copy -v --no-root-password --option binary-caches "" --debug
+    ${systemToInstall.config.system.build.nixos-install}/bin/nixos-install --system ${systemToInstall.config.system.build.toplevel} --keep-going --no-channel-copy -v --no-root-password --option binary-caches "" --debug -j 4
     umount -Rv ${systemToInstall.config.disko.rootMountPoint}
   '';
   QEMU_OPTS = lib.concatMapStringsSep " " (disk: "-drive file=${disk.name}.raw,if=virtio,cache=unsafe,werror=report,format=raw") (lib.attrValues nixosConfig.config.disko.devices.disk);
