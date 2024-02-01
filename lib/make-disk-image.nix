@@ -69,8 +69,8 @@ let
     echo "lsblk"
     lsblk
     mkdir -p /mnt/nix-store-to-copy
-    ls -al /dev/disk/by-label
-    mount /dev/disk/by-label/disko-nix-store /mnt/nix-store-to-copy
+    ls -al /dev
+    mount /dev/vda /mnt/nix-store-to-copy
 
     echo "executing partitioner"
     # running udev, stolen from stage-1.sh
