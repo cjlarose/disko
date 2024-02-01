@@ -34,11 +34,13 @@ let
   '';
   postVM = ''
     # shellcheck disable=SC2154
+    echo "executing postVM"
     mkdir -p "$out"
     ${lib.concatMapStringsSep "\n" (disk: "mv ${disk.name}.raw \"$out\"/${disk.name}.raw") (lib.attrValues nixosConfig.config.disko.devices.disk)}
     ${extraPostVM}
   '';
   partitioner = ''
+    echo "executing partitioner"
     # running udev, stolen from stage-1.sh
     echo "running udev..."
     ln -sfn /proc/self/fd /dev/fd
@@ -53,15 +55,17 @@ let
     udevadm trigger --action=add
     udevadm settle
 
-    # populate nix db, so nixos-install doesn't complain
+    echo "populate nix db, so nixos-install doesn't complain"
     export NIX_STATE_DIR=$TMPDIR/state
     nix-store --load-db < ${pkgs.closureInfo {
       rootPaths = [ systemToInstall.config.system.build.toplevel ];
     }}/registration
 
+    echo "executing disko script"
     ${systemToInstall.config.system.build.diskoScript}
   '';
   installer = ''
+    echo "executing installer"
     ${systemToInstall.config.system.build.nixos-install}/bin/nixos-install --system ${systemToInstall.config.system.build.toplevel} --keep-going --no-channel-copy -v --no-root-password --option binary-caches ""
     umount -Rv ${systemToInstall.config.disko.rootMountPoint}
   '';
@@ -137,6 +141,7 @@ in
 
     export preVM=${diskoLib.writeCheckedBash { inherit pkgs checked; } "preVM.sh" ''
       set -efu
+      echo "executing preVM.sh"
       mv copy_before_disko copy_after_disko xchg/
       ${preVM}
     ''}
