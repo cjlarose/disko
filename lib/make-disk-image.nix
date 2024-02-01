@@ -48,6 +48,7 @@ let
     ${lib.concatMapStringsSep "\n" (disk: "truncate -s ${disk.imageSize} ${disk.name}.raw") (lib.attrValues nixosConfig.config.disko.devices.disk)}
 
     echo "copying nix store seed"
+    # TODO switch this to use a temporary copy-on-write image similar to runInLinuxImage
     echo "diskImage=$diskImage"
     cp "$diskImage" nix-store-seed.raw
     chmod u+w nix-store-seed.raw
@@ -108,7 +109,7 @@ in
       buildInputs = dependencies;
       inherit preVM postVM QEMU_OPTS;
       memSize = nixosConfig.config.disko.memSize;
-      diskImage = "${storeImage}/nixos.raw";
+      diskImage = "${storeImage}/nixos.img";
     }
     (partitioner + installer));
   impure = diskoLib.writeCheckedBash { inherit checked pkgs; } name ''
