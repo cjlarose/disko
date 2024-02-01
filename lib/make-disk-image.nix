@@ -20,6 +20,20 @@ let
       boot.loader.grub.devices = lib.mkForce cleanedConfig.boot.loader.grub.devices;
     }];
   };
+  storeImage = import (pkgs.path + "/nixos/lib/make-disk-image.nix") {
+    name = "nix-store-image";
+    inherit pkgs lib;
+    config = systemToInstall.config;
+    format = "qcow2";
+    onlyNixStore = true;
+    label = "disko-nix-store";
+    partitionTableType = "none";
+    installBootLoader = false;
+    touchEFIVars = false;
+    diskSize = "auto";
+    additionalSpace = "0M";
+    copyChannel = false;
+  };
   dependencies = with pkgs; [
     bash
     coreutils
@@ -42,6 +56,11 @@ let
   partitioner = ''
     echo "setting NIX_STORE to bogus"
     export NIX_STORE=/nonexistent-store
+
+    echo "lsblk"
+    lsblk
+    mkdir -p /mnt/nix-store-to-copy
+    mount /dev/disk/by-label/disko-nix-store /mnt/nix-store-to-copy
 
     echo "executing partitioner"
     # running udev, stolen from stage-1.sh
@@ -80,6 +99,7 @@ in
       buildInputs = dependencies;
       inherit preVM postVM QEMU_OPTS;
       memSize = nixosConfig.config.disko.memSize;
+      diskImage = "${storeImage}/nixos.qcow2";
     }
     (partitioner + installer));
   impure = diskoLib.writeCheckedBash { inherit checked pkgs; } name ''
