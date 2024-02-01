@@ -24,7 +24,7 @@ let
     name = "nix-store-image";
     inherit pkgs lib;
     config = systemToInstall.config;
-    format = "qcow2";
+    format = "raw";
     onlyNixStore = true;
     label = "disko-nix-store";
     partitionTableType = "none";
@@ -49,10 +49,10 @@ let
 
     echo "copying nix store seed"
     echo "diskImage=$diskImage"
-    cp "$diskImage" nix-store-seed.qcow2
-    chmod u+w nix-store-seed.qcow2
-    ls -al nix-store-seed.qcow2
-    export diskImage=nix-store-seed.qcow2
+    cp "$diskImage" nix-store-seed.raw
+    chmod u+w nix-store-seed.raw
+    ls -al nix-store-seed.raw
+    export diskImage=nix-store-seed.raw
   '';
   postVM = ''
     echo "executing postVM"
@@ -108,7 +108,7 @@ in
       buildInputs = dependencies;
       inherit preVM postVM QEMU_OPTS;
       memSize = nixosConfig.config.disko.memSize;
-      diskImage = "${storeImage}/nixos.qcow2";
+      diskImage = "${storeImage}/nixos.raw";
     }
     (partitioner + installer));
   impure = diskoLib.writeCheckedBash { inherit checked pkgs; } name ''
