@@ -68,6 +68,7 @@ let
     echo "lsblk"
     lsblk
     mkdir -p /mnt/nix-store-to-copy
+    ls -al /dev/disk/by-label
     mount /dev/disk/by-label/disko-nix-store /mnt/nix-store-to-copy
 
     echo "executing partitioner"
