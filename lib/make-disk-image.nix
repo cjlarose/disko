@@ -63,14 +63,14 @@ let
     ${extraPostVM}
   '';
   partitioner = ''
-    echo "setting NIX_STORE to bogus"
-    export NIX_STORE=/nonexistent-store
-
     echo "lsblk"
     lsblk
-    mkdir -p /mnt/nix-store-to-copy
-    mount /dev/vda /mnt/nix-store-to-copy
-    ls -al /mnt/nix-store-to-copy
+    umount -v "$NIX_STORE"
+    mount /dev/vda "$NIX_STORE"
+    ls -al "$NIX_STORE"
+
+    echo "lsblk after remountig nix store"
+    lsblk
 
     echo "executing partitioner"
     # running udev, stolen from stage-1.sh
