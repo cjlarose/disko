@@ -44,11 +44,19 @@ let
     util-linux
   ] ++ nixosConfig.config.disko.extraDependencies;
   preVM = ''
+    echo "executing preVM"
     ${lib.concatMapStringsSep "\n" (disk: "truncate -s ${disk.imageSize} ${disk.name}.raw") (lib.attrValues nixosConfig.config.disko.devices.disk)}
+
+    echo "copying nix store seed"
+    echo "diskImage=$diskImage"
+    cp "$diskImage" nix-store-seed.qcow2
+    chmod u+w nix-store-seed.qcow2
+    ls -al nix-store-seed.qcow2
+    export diskImage=nix-store-seed.qcow2
   '';
   postVM = ''
-    # shellcheck disable=SC2154
     echo "executing postVM"
+    # shellcheck disable=SC2154
     mkdir -p "$out"
     ${lib.concatMapStringsSep "\n" (disk: "mv ${disk.name}.raw \"$out\"/${disk.name}.raw") (lib.attrValues nixosConfig.config.disko.devices.disk)}
     ${extraPostVM}
