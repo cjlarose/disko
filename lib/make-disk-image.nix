@@ -65,8 +65,6 @@ let
   partitioner = ''
     echo "lsblk"
     lsblk
-    export NIX_STORE=/nix/store-seed
-    mkdir -p "$NIX_STORE"
     mount /dev/vda "$NIX_STORE"
     ls -al "$NIX_STORE"
 
