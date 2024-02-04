@@ -68,7 +68,11 @@ let
 
     mkdir /nix/store-seed
     mount /dev/vda /nix/store-seed
-    mount -t overlay overlay -olowerdir=/nix/store-seed:"$NIX_STORE" "$NIX_STORE"
+
+    mkdir /nix/store-upper
+    mkdir /nix/store-work
+
+    mount -t overlay overlay -olowerdir=/nix/store-seed:"$NIX_STORE",upperdir=/nix/store-upper,workdir=/nix/store-work "$NIX_STORE"
 
     ls -al "$NIX_STORE"
 
