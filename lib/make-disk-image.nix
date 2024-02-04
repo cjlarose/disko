@@ -65,7 +65,11 @@ let
   partitioner = ''
     echo "lsblk"
     lsblk
-    mount /dev/vda "$NIX_STORE"
+
+    mkdir /nix/store-seed
+    mount /dev/vda /nix/store-seed
+    mount -t overlay overlay -olowerdir=/nix/store-seed:"$NIX_STORE" "$NIX_STORE"
+
     ls -al "$NIX_STORE"
 
     echo "lsblk after remountig nix store"
