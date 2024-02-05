@@ -66,6 +66,9 @@ let
     echo "lsblk"
     lsblk
 
+    echo "where is mkfs.vfat"
+    ls -al $(which mkfs.vfat)
+
     mkdir /nix/store-seed
     mount /dev/vda /nix/store-seed
 
@@ -74,6 +77,10 @@ let
 
     mount -t overlay overlay -olowerdir=/nix/store-seed:"$NIX_STORE",upperdir=/nix/store-upper,workdir=/nix/store-work "$NIX_STORE"
 
+    echo "where is mkfs.vfat"
+    ls -al $(which mkfs.vfat)
+
+    echo "store contents"
     ls -al "$NIX_STORE"
 
     echo "lsblk after remountig nix store"
